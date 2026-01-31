@@ -6,11 +6,14 @@ interface Props {
 }
 
 const AttractionCard = ({ data }: Props) => {
-
   const navigate = useNavigate();
 
   return (
-    <div className="card h-100 shadow-sm">
+    <div
+      className="card h-100 shadow-sm attraction-card"
+      onClick={() => navigate(`/tours/${data.slug}`)}
+      role="button"
+    >
       <img
         src={data.heroImage}
         className="card-img-top"
@@ -32,16 +35,8 @@ const AttractionCard = ({ data }: Props) => {
         )}
 
         <div className="mt-auto fw-semibold">
-          Normal price: ${data.price}
+          From ${data.price}
         </div>
-
-        <button
-          className="btn btn-primary btn-sm mt-2"
-          onClick={() => navigate(`/tours/${data.slug}`)}
-        >
-          View tour
-        </button>
-
       </div>
     </div>
   );

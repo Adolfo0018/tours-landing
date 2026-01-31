@@ -1,0 +1,192 @@
+.custom-navbar {
+  background: #0F172A;
+}
+
+.custom-navbar .nav-link,
+.custom-navbar .navbar-brand {
+  color: #E5E7EB !important;
+}
+
+.custom-navbar .nav-link:hover {
+  color: #38BDF8 !important;
+}
+
+.attraction-card {
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.attraction-card:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 20px 35px rgba(0,0,0,.12) !important;
+}
+
+/* ===== GLOBAL ===== */
+
+body {
+  background: #FAF7F2;
+  color: #1F2937;
+}
+
+section {
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
+
+.card {
+  background: white;
+  border: none;
+}
+
+
+/* ===== HEADER ===== */
+
+.header-navbar {
+  background: #111827 !important;
+}
+
+.header-navbar .navbar-brand,
+.header-navbar .nav-link {
+  color: #F9FAFB !important;
+  font-weight: 500;
+}
+
+.header-navbar .nav-link:hover {
+  color: #38BDF8 !important;
+}
+
+/* WhatsApp button tweak */
+
+.header-navbar .btn-success {
+  background: #22C55E;
+  border: none;
+}
+
+.header-navbar .btn-success:hover {
+  background: #16A34A;
+}
+
+/* Hamburger */
+
+.header-navbar .navbar-toggler {
+  border-color: #38BDF8;
+}
+
+.header-navbar .navbar-toggler-icon {
+  filter: invert(1);
+}
+
+/* ===== WhatsApp Navbar Button ===== */
+
+.whatsapp-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #22C55E;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 999px;
+  text-decoration: none;
+  overflow: hidden;
+  transition: all .25s ease;
+  max-width: 42px;
+}
+
+/* reveal text on hover */
+.whatsapp-text {
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity .2s ease;
+}
+
+.whatsapp-btn:hover {
+  max-width: 140px;
+  padding-right: 18px;
+  background: #16A34A;
+}
+
+.whatsapp-btn:hover .whatsapp-text {
+  opacity: 1;
+}
+
+.whatsapp-icon {
+  flex-shrink: 0;
+}
+
+/* Pulse */
+.whatsapp-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  animation: pulse 2.5s infinite;
+  background: rgba(34,197,94,.35);
+  z-index: -1;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: .6; }
+  70% { transform: scale(1.4); opacity: 0; }
+  100% { opacity: 0; }
+}
+
+/* Tooltip */
+
+.whatsapp-tooltip {
+  position: absolute;
+  bottom: -34px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s ease;
+}
+
+.whatsapp-btn:hover .whatsapp-tooltip {
+  opacity: 1;
+}
+
+/* ===== Floating WhatsApp (mobile + desktop) ===== */
+
+.whatsapp-floating {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 999;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #22C55E;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 10px 25px rgba(0,0,0,.25);
+  transition: transform .2s ease;
+}
+
+.whatsapp-floating:hover {
+  transform: scale(1.08);
+}
+
+.btn-success {
+  background: #22C55E;
+  border: none;
+}
+
+.btn-success:hover {
+  background: #16A34A;
+}
+
+.btn-success svg {
+  transition: transform .2s ease;
+}
+
+.btn-success:hover svg {
+  transform: scale(1.15);
+}
