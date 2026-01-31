@@ -22,11 +22,6 @@ const TourDetail = () => {
   return (
     <div className="container mt-4">
 
-      {/* Back */}
-      <button className="btn btn-link mb-3" onClick={() => navigate(-1)}>
-        ← Back
-      </button>
-
       {/* Title */}
       <h1>{tour.title}</h1>
 
@@ -103,7 +98,7 @@ const TourDetail = () => {
         {/* RESERVATIONS */}
         <div className="col-lg-4">
 
-            <Reservations price={tour.price} />
+            <Reservations price={tour.price} title={tour.title} />
 
         </div>
       </div>

@@ -52,10 +52,6 @@ const Checkout = () => {
   return (
     <div className="container mt-4">
 
-      <button className="btn btn-link mb-3" onClick={() => navigate(-1)}>
-        ← Back
-      </button>
-
       <h2>Complete your reservation</h2>
 
       {/* Summary */}

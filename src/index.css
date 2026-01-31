@@ -190,3 +190,34 @@ section {
 .btn-success:hover svg {
   transform: scale(1.15);
 }
+
+/* ===== Breadcrumbs (mobile + desktop) ===== */
+
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  font-size: 14px;
+  color: #666;
+}
+
+.breadcrumbs a {
+  text-decoration: none;
+  color: #444;
+  transition: color .2s;
+}
+
+.breadcrumbs a:hover {
+  color: #000;
+}
+
+.breadcrumbs .sep {
+  margin: 0 4px;
+  color: #aaa;
+}
+
+.breadcrumbs .current {
+  font-weight: 500;
+  color: #111;
+}

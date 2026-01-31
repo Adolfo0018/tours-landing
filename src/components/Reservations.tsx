@@ -6,9 +6,10 @@ import { format } from "date-fns";
 
 interface Props {
   price: number;
+  title: string;
 }
 
-const Reservations = ({ price }: Props) => {
+const Reservations = ({ price, title }: Props) => {
   const today = new Date();
 
   const [adults, setAdults] = useState(1);
@@ -105,7 +106,7 @@ const Reservations = ({ price }: Props) => {
     onClick={() =>
         navigate("/checkout", {
         state: {
-            title: "Tour",
+            title: title,
             people: totalPeople,
             startDate: format(range[0].startDate as Date, "yyyy-MM-dd"),
             endDate: format(range[0].endDate as Date, "yyyy-MM-dd"),

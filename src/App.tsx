@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import Header from "./components/Header";
+import Breadcrumbs from "./components/Breadcrumbs";
 import AttractionsSection from "./components/AttractionsSection";
 import TourDetail from "./pages/TourDetail";
 import Checkout from "./pages/Checkout";
@@ -10,6 +11,7 @@ function App() {
   return (
     <>
       <Header />
+      <Breadcrumbs />
 
       <Routes>
         <Route path="/" element={<AttractionsSection />} />
