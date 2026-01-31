@@ -23,9 +23,25 @@
 
 /* ===== GLOBAL ===== */
 
+/*
 body {
   background: #FAF7F2;
   color: #1F2937;
+}*/
+
+body {
+  min-height: 100vh;
+  margin: 0;
+
+  background:
+    linear-gradient(
+      rgba(255,255,255,.85),
+      rgba(255,255,255,.85)
+    ),
+    url("./assets/bodybg.jpg");
+
+  background-size: cover;
+  background-position: center;
 }
 
 section {
