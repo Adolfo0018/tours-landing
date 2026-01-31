@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
-import { DateRange } from "react-date-range";
-import { addDays, differenceInCalendarDays } from "date-fns";
+import { Calendar  } from "react-date-range";
+import { differenceInCalendarDays } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 
@@ -18,7 +18,7 @@ const Reservations = ({ price, title }: Props) => {
   const [range, setRange] = useState([
     {
       startDate: today,
-      endDate: addDays(today, 1),
+      endDate: today,
       key: "selection",
     },
   ]);
@@ -71,12 +71,11 @@ const Reservations = ({ price, title }: Props) => {
       {/* Date range */}
       <div className="mb-3">
         <label className="form-label">Select dates</label>
-
-        <DateRange
-          editableDateInputs
-          onChange={(item: any) => setRange([item.selection])}
-          moveRangeOnFirstSelection={false}
-          ranges={range}
+        <Calendar
+          date={range[0].startDate}
+          onChange={(date) =>
+            setRange([{ startDate: date, endDate: date, key: "selection" }])
+          }
           minDate={today}
         />
       </div>
