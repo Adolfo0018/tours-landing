@@ -125,9 +125,9 @@ const TourDetail = () => {
               id="do"
               role="tabpanel"
             >
-              <ul className="list-group list-group-flush">
+              <ul className="list-group list-group-flush bg-white bg-opacity-10 border border-light rounded-3 shadow">
                 {tour.whatYouWillDo.map((item, i) => (
-                  <li key={i} className="list-group-item">
+                  <li key={i} className="list-group-item bg-transparent text-black border-bottom border-light border-opacity-25">
                     {item}
                   </li>
                 ))}
@@ -140,9 +140,9 @@ const TourDetail = () => {
               id="included"
               role="tabpanel"
             >
-              <ul className="list-group list-group-flush">
+              <ul className="list-group list-group-flush bg-white bg-opacity-10 border border-light rounded-3 shadow">
                 {tour.whatsIncluded.map((item, i) => (
-                  <li key={i} className="list-group-item">
+                  <li key={i} className="list-group-item bg-transparent text-black border-bottom border-light border-opacity-25">
                     {item}
                   </li>
                 ))}
@@ -155,7 +155,7 @@ const TourDetail = () => {
               id="reservation"
               role="tabpanel"
             >
-              <ul className="list-group list-group-flush">
+              <ul className="list-group list-group-flush bg-white bg-opacity-10 border border-light rounded-3 shadow">
                 <Reservations price={tour.price} title={tour.title} />
               </ul>
             </div>

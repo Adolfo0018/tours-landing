@@ -12,7 +12,9 @@ import "./index.css";
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <BrowserRouter>
+    <div className="app-background">
       <App />
+    </div>
     </BrowserRouter>
   </React.StrictMode>
 );

@@ -65,7 +65,7 @@ const Header = () => {
       </nav>
 
       {/* Hero */}
-      <div className="bg-light pt-5">
+      <div className="pt-5">
         <div className="container text-center py-5 mt-4">
           <h1 className="display-5 fw-bold">Yucatán Tours</h1>
 

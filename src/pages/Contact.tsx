@@ -5,7 +5,7 @@ const Contact = () => {
     "Hola, me gustaría recibir información sobre sus tours. Gracias.";
 
   return (
-    <section id="contact" className="py-5 bg-light">
+    <section id="contact" className="py-5 bg-white bg-opacity-10 text-black border border-light rounded-3 shadow">
       <div className="container text-center">
 
         <h2 className="fw-bold mb-3">Contact</h2>
