@@ -2,7 +2,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 const Checkout = () => {
-  const navigate = useNavigate();
   const { state } = useLocation();
 
   const booking = state;
