@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useState } from "react";
 import StripeCheckout from "../components/StripeCheckout";
 
@@ -13,10 +13,9 @@ const WHATSAPP_NUMBER = "5219991140120";
 
 const Checkout = () => {
   const { state } = useLocation();
-  const navigate = useNavigate();
   const booking = state as Booking;
 
-  const [validated, setValidated] = useState(false);
+  const [validated] = useState(false);
 
   const [form, setForm] = useState({
     firstName: "",
