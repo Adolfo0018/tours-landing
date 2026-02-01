@@ -42,8 +42,13 @@ const CheckoutForm = ({ onSuccess }: { onSuccess: () => void }) => {
       return;
     }
 
-    onSuccess();
+    if (result.paymentIntent?.status === "succeeded") {
+      onSuccess();
+    }
+
+    setLoading(false);
   };
+
 
   return (
     <form onSubmit={handlePay} className="mt-4">
