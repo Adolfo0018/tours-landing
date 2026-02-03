@@ -11,7 +11,7 @@ const stripePromise = loadStripe(import.meta.env.VITE_PUBLIC_STRIPE_KEY);
 
 interface Props {
   amount: number;
-  canPay: boolean;
+  canPay: boolean; // lo dejamos para el botón
   onSuccess: (paymentIntent: any) => void;
   onError: (message: string) => void;
 }
@@ -23,7 +23,7 @@ const CheckoutForm = ({
 }: {
   onSuccess: (pi: any) => void;
   onError: (msg: string) => void;
-    canPay: boolean;
+  canPay: boolean;
 }) => {
   const stripe = useStripe();
   const elements = useElements();
@@ -33,7 +33,7 @@ const CheckoutForm = ({
 
   const handlePay = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!stripe || !elements || loading || !canPay) {
       setError("Please complete the form before paying.");
       return;
@@ -50,17 +50,12 @@ const CheckoutForm = ({
       redirect: "if_required",
     });
 
-    console.log("Stripe result:", result);
-    console.log("PaymentIntent status:", result.paymentIntent?.status);
-
-
     if (result.error) {
       setError(result.error.message || "Payment failed");
       onError(result.error.message || "Payment failed");
       setLoading(false);
       return;
     }
-
 
     if (result.paymentIntent?.status === "processing") {
       setError("Payment is processing, please wait a moment...");
@@ -79,14 +74,14 @@ const CheckoutForm = ({
 
   return (
     <form onSubmit={handlePay} className="mt-4">
-      <PaymentElement />
+      <PaymentElement options={{ layout: "tabs", paymentMethodOrder: ["card"] }} />
 
       {error && <div className="text-danger mt-2">{error}</div>}
 
       <button
         type="submit"
         className="btn btn-primary w-100 mt-3"
-        disabled={!stripe || loading || !canPay}
+        disabled={!stripe || loading || !canPay} // usamos prop solo para botón
       >
         {loading ? "Processing..." : "Pay with card"}
       </button>
@@ -108,9 +103,7 @@ const StripeCheckout = ({ amount, canPay, onSuccess, onError }: Props) => {
 
     fetch("/.netlify/functions/create-payment-intent", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ amount }),
     })
       .then((res) => res.json())
@@ -125,13 +118,13 @@ const StripeCheckout = ({ amount, canPay, onSuccess, onError }: Props) => {
   }, [amount]);
 
   if (loading) return <div className="mt-3">Loading payment...</div>;
-
   if (!clientSecret)
     return <div className="text-danger mt-3">Stripe failed to initialize</div>;
 
+  // ✅ Aquí nunca pasamos canPay a Elements, solo al CheckoutForm
   return (
     <Elements stripe={stripePromise} options={{ clientSecret }}>
-      <CheckoutForm onSuccess={onSuccess} onError={onError} canPay={canPay}/>
+      <CheckoutForm onSuccess={onSuccess} onError={onError} canPay={canPay} />
     </Elements>
   );
 };
