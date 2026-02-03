@@ -181,7 +181,8 @@ ${form.notes || "N/A"}
           setPaymentStatus("success");
 
           const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-            generateWhatsAppMessage()
+            generateWhatsAppMessage() +
+              `\n\nStripe Payment ID:\n${paymentIntent.id}`
           )}`;
 
           window.open(url, "_blank");
