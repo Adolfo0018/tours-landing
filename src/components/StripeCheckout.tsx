@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import {
   Elements,
@@ -91,10 +91,13 @@ const CheckoutForm = ({
 const StripeCheckout = ({ amount, onSuccess, onError }: Props) => {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const createdRef = useRef(false);
 
   useEffect(() => {
     if (!amount) return;
+    if (createdRef.current) return;
 
+    createdRef.current = true;
     setLoading(true);
 
     fetch("/.netlify/functions/create-payment-intent", {
