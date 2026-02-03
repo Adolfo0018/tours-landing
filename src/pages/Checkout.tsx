@@ -102,12 +102,18 @@ ${form.notes || "N/A"}
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+
+  const isValidEmail = (email: string) =>
+  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
   const isFormValid = () =>
-    form.firstName &&
-    form.lastName &&
-    form.email &&
-    form.phone &&
-    form.hotel;
+    !!(
+      form.firstName &&
+      form.lastName &&
+      isValidEmail(form.email) &&
+      form.phone
+    );
+
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -161,7 +167,9 @@ ${form.notes || "N/A"}
 
           <div className="col-md-6 mb-3">
             <input
-              className="form-control"
+              className={`form-control ${
+                validated && !isValidEmail(form.email) ? "is-invalid" : ""
+              }`}
               placeholder="Email"
               name="email"
               type="email"
@@ -169,7 +177,7 @@ ${form.notes || "N/A"}
               onChange={handleChange}
               required
             />
-            <div className="invalid-feedback">Valid email required</div>
+            <div className="invalid-feedback">Please enter a valid email address</div>
           </div>
 
           <div className="col-md-6 mb-3">
@@ -178,7 +186,12 @@ ${form.notes || "N/A"}
               placeholder="Phone / WhatsApp"
               name="phone"
               value={form.phone}
-              onChange={handleChange}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  phone: e.target.value.replace(/\D/g, ""),
+                })
+              }
               required
               pattern="[0-9]{10}"
             />
@@ -213,6 +226,7 @@ ${form.notes || "N/A"}
       {/* Stripe OUTSIDE form */}
       <StripeCheckout
         amount={booking.total * 100}
+        canPay={isFormValid()}
         onSuccess={(paymentIntent) => {
           setPaymentStatus("success");
 
@@ -252,7 +266,10 @@ ${form.notes || "N/A"}
 
               <button
                 className="btn btn-primary mt-3"
-                onClick={() => setPaymentStatus(null)}
+                onClick={() => {
+                  setPaymentStatus(null);
+                  navigate("/");
+                }}
               >
                 Close
               </button>

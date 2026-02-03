@@ -11,6 +11,7 @@ const stripePromise = loadStripe(import.meta.env.VITE_PUBLIC_STRIPE_KEY);
 
 interface Props {
   amount: number;
+  canPay: boolean;
   onSuccess: (paymentIntent: any) => void;
   onError: (message: string) => void;
 }
@@ -18,9 +19,11 @@ interface Props {
 const CheckoutForm = ({
   onSuccess,
   onError,
+  canPay,
 }: {
   onSuccess: (pi: any) => void;
   onError: (msg: string) => void;
+    canPay: boolean;
 }) => {
   const stripe = useStripe();
   const elements = useElements();
@@ -30,8 +33,11 @@ const CheckoutForm = ({
 
   const handlePay = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!stripe || !elements || loading) return;
+    
+    if (!stripe || !elements || loading || !canPay) {
+      setError("Please complete the form before paying.");
+      return;
+    }
 
     setLoading(true);
     setError(null);
@@ -80,7 +86,7 @@ const CheckoutForm = ({
       <button
         type="submit"
         className="btn btn-primary w-100 mt-3"
-        disabled={!stripe || loading}
+        disabled={!stripe || loading || !canPay}
       >
         {loading ? "Processing..." : "Pay with card"}
       </button>
@@ -88,7 +94,7 @@ const CheckoutForm = ({
   );
 };
 
-const StripeCheckout = ({ amount, onSuccess, onError }: Props) => {
+const StripeCheckout = ({ amount, canPay, onSuccess, onError }: Props) => {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const createdRef = useRef(false);
@@ -125,7 +131,7 @@ const StripeCheckout = ({ amount, onSuccess, onError }: Props) => {
 
   return (
     <Elements stripe={stripePromise} options={{ clientSecret }}>
-      <CheckoutForm onSuccess={onSuccess} onError={onError} />
+      <CheckoutForm onSuccess={onSuccess} onError={onError} canPay={canPay}/>
     </Elements>
   );
 };
