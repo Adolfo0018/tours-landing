@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import StripeCheckout from "../components/StripeCheckout";
 
 interface Booking {
@@ -15,6 +15,8 @@ const Checkout = () => {
   const navigate = useNavigate();
   const { state } = useLocation();
 
+  const hasHandledRedirect = useRef(false);
+
   useEffect(() => {
     if (!state) navigate("/");
   }, [state, navigate]);
@@ -26,7 +28,8 @@ const Checkout = () => {
   const [validated, setValidated] = useState(false);
 
   const [paymentStatus, setPaymentStatus] = useState<
-  "success" | "error" | null>(null);
+    "success" | "error" | null
+  >(null);
 
   const [paymentError, setPaymentError] = useState("");
 
@@ -59,6 +62,39 @@ Hotel: ${form.hotel}
 Notes:
 ${form.notes || "N/A"}
 `;
+
+  /* ================= STRIPE REDIRECT HANDLER ================= */
+
+  useEffect(() => {
+    if (hasHandledRedirect.current) return;
+
+    const params = new URLSearchParams(window.location.search);
+    const status = params.get("redirect_status");
+    const pi = params.get("payment_intent");
+
+    if (status === "succeeded" && pi) {
+      hasHandledRedirect.current = true;
+
+      setPaymentStatus("success");
+
+      const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+        generateWhatsAppMessage() + `\n\nStripe Payment ID:\n${pi}`
+      )}`;
+
+      window.open(url, "_blank");
+
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+
+    if (status === "failed") {
+      hasHandledRedirect.current = true;
+      setPaymentStatus("error");
+      setPaymentError("Payment failed.");
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+  }, []);
+
+  /* ========================================================== */
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -174,7 +210,7 @@ ${form.notes || "N/A"}
         </div>
       </form>
 
-      {/* Stripe must live OUTSIDE form */}
+      {/* Stripe OUTSIDE form */}
       <StripeCheckout
         amount={booking.total * 100}
         onSuccess={(paymentIntent) => {
@@ -200,7 +236,6 @@ ${form.notes || "N/A"}
         >
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content p-4 text-center">
-
               {paymentStatus === "success" && (
                 <>
                   <h4 className="text-success">Payment successful ✅</h4>
@@ -225,13 +260,8 @@ ${form.notes || "N/A"}
           </div>
         </div>
       )}
-
-
     </div>
-
-
   );
 };
-
 
 export default Checkout;
