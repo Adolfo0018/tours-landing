@@ -15,6 +15,22 @@ const Checkout = () => {
   const navigate = useNavigate();
   const { state } = useLocation();
 
+  const [touched, setTouched] = useState({
+    firstName: false,
+    lastName: false,
+    email: false,
+    phone: false,
+    hotel: false,
+  });
+
+  const handleBlur = (
+    e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setTouched({ ...touched, [e.target.name]: true });
+  };
+
+  
+
   const hasHandledRedirect = useRef(false);
 
   useEffect(() => {
@@ -122,6 +138,14 @@ ${form.notes || "N/A"}
     if (!isFormValid()) return;
   };
 
+  const emailInvalid =
+    touched.email &&
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email);
+
+  const phoneInvalid =
+    touched.phone &&
+    (!/^\d+$/.test(form.phone) || form.phone.length < 10);
+
   return (
     <div className="container mt-4">
       <h2>Complete your reservation</h2>
@@ -143,11 +167,14 @@ ${form.notes || "N/A"}
         <div className="row">
           <div className="col-md-6 mb-3">
             <input
-              className="form-control"
+              className={`form-control ${
+                touched.firstName && !form.firstName ? "is-invalid" : ""
+              }`}
               placeholder="First name"
               name="firstName"
               value={form.firstName}
               onChange={handleChange}
+              onBlur={handleBlur}
               required
             />
             <div className="invalid-feedback">First name required</div>
@@ -155,11 +182,14 @@ ${form.notes || "N/A"}
 
           <div className="col-md-6 mb-3">
             <input
-              className="form-control"
+              className={`form-control ${
+                touched.lastName && !form.lastName ? "is-invalid" : ""
+              }`}
               placeholder="Last name"
               name="lastName"
               value={form.lastName}
               onChange={handleChange}
+              onBlur={handleBlur}
               required
             />
             <div className="invalid-feedback">Last name required</div>
@@ -167,14 +197,12 @@ ${form.notes || "N/A"}
 
           <div className="col-md-6 mb-3">
             <input
-              className={`form-control ${
-                validated && !isValidEmail(form.email) ? "is-invalid" : ""
-              }`}
+              className={`form-control ${emailInvalid ? "is-invalid" : ""}`}
               placeholder="Email"
               name="email"
-              type="email"
               value={form.email}
               onChange={handleChange}
+              onBlur={handleBlur}
               required
             />
             <div className="invalid-feedback">Please enter a valid email address</div>
@@ -182,18 +210,17 @@ ${form.notes || "N/A"}
 
           <div className="col-md-6 mb-3">
             <input
-              className="form-control"
+              className={`form-control ${phoneInvalid ? "is-invalid" : ""}`}
               placeholder="Phone / WhatsApp"
               name="phone"
               value={form.phone}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  phone: e.target.value.replace(/\D/g, ""),
-                })
-              }
+              onChange={(e) => {
+                if (/^\d*$/.test(e.target.value)) {
+                  handleChange(e);
+                }
+              }}
+              onBlur={handleBlur}
               required
-              pattern="[0-9]{10}"
             />
             <div className="invalid-feedback">10 digit phone required</div>
           </div>
