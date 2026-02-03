@@ -1,5 +1,5 @@
-import { useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import StripeCheckout from "../components/StripeCheckout";
 
 interface Booking {
@@ -12,10 +12,18 @@ interface Booking {
 const WHATSAPP_NUMBER = "5219991140120";
 
 const Checkout = () => {
+  const navigate = useNavigate();
   const { state } = useLocation();
+
+  useEffect(() => {
+    if (!state) navigate("/");
+  }, [state, navigate]);
+
+  if (!state) return null;
+
   const booking = state as Booking;
 
-  const [validated] = useState(false);
+  const [validated, setValidated] = useState(false);
 
   const [form, setForm] = useState({
     firstName: "",
@@ -29,9 +37,7 @@ const Checkout = () => {
   const formatDate = (date: string) =>
     new Date(date).toLocaleDateString("en-US");
 
-  // Genera el mensaje de WhatsApp
-  const generateWhatsAppMessage = () => {
-    return `
+  const generateWhatsAppMessage = () => `
 *New Tour Reservation*
 
 *Tour:* ${booking.title}
@@ -48,26 +54,25 @@ Hotel: ${form.hotel}
 Notes:
 ${form.notes || "N/A"}
 `;
-  };
 
-  // Función de cambio de input
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // Manejo de submit del form tradicional (solo validación)
+  const isFormValid = () =>
+    form.firstName &&
+    form.lastName &&
+    form.email &&
+    form.phone &&
+    form.hotel;
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formElement = e.currentTarget;
+    setValidated(true);
 
-    if (!formElement.checkValidity()) {
-      formElement.classList.add("was-validated");
-      return;
-    }
-
-    alert("Please use the Stripe checkout below to complete payment.");
+    if (!isFormValid()) return;
   };
 
   return (
@@ -82,7 +87,7 @@ ${form.notes || "N/A"}
         <div className="fw-semibold mt-2">Total: ${booking.total}</div>
       </div>
 
-      {/* Form */}
+      {/* Customer Form */}
       <form
         className={`card p-3 ${validated ? "was-validated" : ""}`}
         onSubmit={handleSubmit}
@@ -162,26 +167,21 @@ ${form.notes || "N/A"}
             />
           </div>
         </div>
-
-        {/* Stripe Checkout */}
-        <StripeCheckout
-          amount={booking.total * 100}
-          onSuccess={() => {
-            // Abrimos ventana de WhatsApp **antes** del async de Stripe
-            const whatsappWindow = window.open("", "_blank");
-            const send = async () => {
-              // Simula confirmPayment en StripeCheckout
-              // Aquí Stripe ya asegura el pago
-              // Solo llenamos la ventana con WhatsApp
-              const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-                generateWhatsAppMessage()
-              )}`;
-              whatsappWindow?.location.assign(url);
-            };
-            send();
-          }}
-        />
       </form>
+
+      {/* Stripe must live OUTSIDE form */}
+      <StripeCheckout
+        amount={booking.total * 100}
+        onSuccess={(paymentIntent) => {
+          console.log("Stripe success:", paymentIntent.id);
+
+          const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+            generateWhatsAppMessage()
+          )}`;
+
+          window.open(url, "_blank");
+        }}
+      />
     </div>
   );
 };

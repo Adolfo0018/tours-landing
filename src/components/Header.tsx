@@ -7,11 +7,10 @@ const Header = () => {
       <nav className="navbar navbar-expand-lg fixed-top shadow header-navbar">
 
         <div className="container">
-          <a className="navbar-brand fw-bold">
-            <Link className="nav-link" to="/">
-              🌴 Yucatán Tours
-            </Link>
-          </a>
+          
+          <Link className="nav-link" to="/">
+            🌴 Yucatán Tours
+          </Link>
 
           <button
             className="navbar-toggler"

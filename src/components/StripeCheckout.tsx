@@ -7,16 +7,14 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 
-const stripePromise = loadStripe(
-  import.meta.env.VITE_PUBLIC_STRIPE_KEY
-);
+const stripePromise = loadStripe(import.meta.env.VITE_PUBLIC_STRIPE_KEY);
 
 interface Props {
   amount: number;
-  onSuccess: () => void;
+  onSuccess: (paymentIntent: any) => void;
 }
 
-const CheckoutForm = ({ onSuccess }: { onSuccess: () => void }) => {
+const CheckoutForm = ({ onSuccess }: { onSuccess: (pi: any) => void }) => {
   const stripe = useStripe();
   const elements = useElements();
 
@@ -26,15 +24,21 @@ const CheckoutForm = ({ onSuccess }: { onSuccess: () => void }) => {
   const handlePay = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!stripe || !elements) return;
+    if (!stripe || !elements || loading) return;
 
     setLoading(true);
     setError(null);
 
     const result = await stripe.confirmPayment({
       elements,
+      confirmParams: {
+        return_url: window.location.origin,
+      },
       redirect: "if_required",
     });
+
+    console.log("Stripe result:", result);
+    console.log("PaymentIntent status:", result.paymentIntent?.status);
 
     if (result.error) {
       setError(result.error.message || "Payment failed");
@@ -42,13 +46,20 @@ const CheckoutForm = ({ onSuccess }: { onSuccess: () => void }) => {
       return;
     }
 
-    if (result.paymentIntent?.status === "succeeded") {
-      onSuccess();
+    if (result.paymentIntent?.status === "processing") {
+      setError("Payment is processing, please wait a moment...");
+      setLoading(false);
+      return;
     }
 
+    if (result.paymentIntent?.status === "succeeded") {
+      onSuccess(result.paymentIntent);
+      return;
+    }
+
+    setError("Unexpected payment state.");
     setLoading(false);
   };
-
 
   return (
     <form onSubmit={handlePay} className="mt-4">
@@ -74,6 +85,8 @@ const StripeCheckout = ({ amount, onSuccess }: Props) => {
   useEffect(() => {
     if (!amount) return;
 
+    setLoading(true);
+
     fetch("/.netlify/functions/create-payment-intent", {
       method: "POST",
       headers: {
@@ -85,16 +98,17 @@ const StripeCheckout = ({ amount, onSuccess }: Props) => {
       .then((data) => {
         setClientSecret(data.clientSecret);
         setLoading(false);
+      })
+      .catch(() => {
+        setClientSecret(null);
+        setLoading(false);
       });
   }, [amount]);
 
-  if (loading) {
-    return <div className="mt-3">Loading payment...</div>;
-  }
+  if (loading) return <div className="mt-3">Loading payment...</div>;
 
-  if (!clientSecret) {
+  if (!clientSecret)
     return <div className="text-danger mt-3">Stripe failed to initialize</div>;
-  }
 
   return (
     <Elements stripe={stripePromise} options={{ clientSecret }}>
