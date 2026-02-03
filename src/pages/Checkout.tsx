@@ -25,6 +25,11 @@ const Checkout = () => {
 
   const [validated, setValidated] = useState(false);
 
+  const [paymentStatus, setPaymentStatus] = useState<
+  "success" | "error" | null>(null);
+
+  const [paymentError, setPaymentError] = useState("");
+
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -173,7 +178,7 @@ ${form.notes || "N/A"}
       <StripeCheckout
         amount={booking.total * 100}
         onSuccess={(paymentIntent) => {
-          console.log("Stripe success:", paymentIntent.id);
+          setPaymentStatus("success");
 
           const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
             generateWhatsAppMessage()
@@ -181,9 +186,51 @@ ${form.notes || "N/A"}
 
           window.open(url, "_blank");
         }}
+        onError={(msg) => {
+          setPaymentStatus("error");
+          setPaymentError(msg);
+        }}
       />
+
+      {paymentStatus && (
+        <div
+          className="modal fade show"
+          style={{ display: "block", background: "rgba(0,0,0,.5)" }}
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content p-4 text-center">
+
+              {paymentStatus === "success" && (
+                <>
+                  <h4 className="text-success">Payment successful ✅</h4>
+                  <p>Your reservation has been completed.</p>
+                </>
+              )}
+
+              {paymentStatus === "error" && (
+                <>
+                  <h4 className="text-danger">Payment failed ❌</h4>
+                  <p>{paymentError}</p>
+                </>
+              )}
+
+              <button
+                className="btn btn-primary mt-3"
+                onClick={() => setPaymentStatus(null)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
     </div>
+
+
   );
 };
+
 
 export default Checkout;

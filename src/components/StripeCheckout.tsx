@@ -12,9 +12,16 @@ const stripePromise = loadStripe(import.meta.env.VITE_PUBLIC_STRIPE_KEY);
 interface Props {
   amount: number;
   onSuccess: (paymentIntent: any) => void;
+  onError: (message: string) => void;
 }
 
-const CheckoutForm = ({ onSuccess }: { onSuccess: (pi: any) => void }) => {
+const CheckoutForm = ({
+  onSuccess,
+  onError,
+}: {
+  onSuccess: (pi: any) => void;
+  onError: (msg: string) => void;
+}) => {
   const stripe = useStripe();
   const elements = useElements();
 
@@ -40,11 +47,14 @@ const CheckoutForm = ({ onSuccess }: { onSuccess: (pi: any) => void }) => {
     console.log("Stripe result:", result);
     console.log("PaymentIntent status:", result.paymentIntent?.status);
 
+
     if (result.error) {
       setError(result.error.message || "Payment failed");
+      onError(result.error.message || "Payment failed");
       setLoading(false);
       return;
     }
+
 
     if (result.paymentIntent?.status === "processing") {
       setError("Payment is processing, please wait a moment...");
@@ -78,7 +88,7 @@ const CheckoutForm = ({ onSuccess }: { onSuccess: (pi: any) => void }) => {
   );
 };
 
-const StripeCheckout = ({ amount, onSuccess }: Props) => {
+const StripeCheckout = ({ amount, onSuccess, onError }: Props) => {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -112,7 +122,7 @@ const StripeCheckout = ({ amount, onSuccess }: Props) => {
 
   return (
     <Elements stripe={stripePromise} options={{ clientSecret }}>
-      <CheckoutForm onSuccess={onSuccess} />
+      <CheckoutForm onSuccess={onSuccess} onError={onError} />
     </Elements>
   );
 };
