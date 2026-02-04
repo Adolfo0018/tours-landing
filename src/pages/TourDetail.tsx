@@ -1,12 +1,31 @@
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { attractions } from "../data/attractions";
+import { getAttractions } from "../data/attractions";
+import { type Attraction } from "../types/Attraction";
 import Reservations from "../components/Reservations";
 
 const TourDetail = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
 
-  const tour = attractions.find((x) => x.slug === slug);
+  const [tour, setTour] = useState<Attraction | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getAttractions().then((data) => {
+      const found = data.find((x) => x.slug === slug);
+      setTour(found || null);
+      setLoading(false);
+    });
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <div className="container mt-4">
+        <p>Loading tour...</p>
+      </div>
+    );
+  }
 
   if (!tour) {
     return (
@@ -21,10 +40,7 @@ const TourDetail = () => {
 
   return (
     <div className="container mt-4">
-
-      {/* Title */}
       <h1>{tour.title}</h1>
-
       <p className="text-muted">{tour.shortDescription}</p>
 
       {/* Carousel */}
@@ -34,7 +50,6 @@ const TourDetail = () => {
         data-bs-ride="carousel"
       >
         <div className="carousel-inner rounded">
-
           {tour.gallery.map((img, idx) => (
             <div
               key={idx}
@@ -48,7 +63,6 @@ const TourDetail = () => {
               />
             </div>
           ))}
-
         </div>
 
         <button
@@ -71,46 +85,36 @@ const TourDetail = () => {
       </div>
 
       <div className="row">
-
-        {/* LEFT CONTENT */}
-
         <div className="col-lg-8">
-
           <ul className="nav nav-tabs mb-3" id="tourTabs" role="tablist">
-            <li className="nav-item" role="presentation">
+            <li className="nav-item">
               <button
                 className="nav-link active"
-                id="do-tab"
                 data-bs-toggle="tab"
                 data-bs-target="#do"
                 type="button"
-                role="tab"
               >
                 What you'll do
               </button>
             </li>
 
-            <li className="nav-item" role="presentation">
+            <li className="nav-item">
               <button
                 className="nav-link"
-                id="included-tab"
                 data-bs-toggle="tab"
                 data-bs-target="#included"
                 type="button"
-                role="tab"
               >
                 What's included
               </button>
             </li>
 
-            <li className="nav-item" role="presentation">
+            <li className="nav-item">
               <button
                 className="nav-link"
-                id="included-tab"
                 data-bs-toggle="tab"
                 data-bs-target="#reservation"
                 type="button"
-                role="tab"
               >
                 Reservation
               </button>
@@ -118,16 +122,14 @@ const TourDetail = () => {
           </ul>
 
           <div className="tab-content">
-
             {/* What you'll do */}
-            <div
-              className="tab-pane fade show active"
-              id="do"
-              role="tabpanel"
-            >
+            <div className="tab-pane fade show active" id="do">
               <ul className="list-group list-group-flush bg-white bg-opacity-10 border border-light rounded-3 shadow">
                 {tour.whatYouWillDo.map((item, i) => (
-                  <li key={i} className="list-group-item bg-transparent text-black border-bottom border-light border-opacity-25">
+                  <li
+                    key={i}
+                    className="list-group-item bg-transparent text-black border-bottom border-light border-opacity-25"
+                  >
                     {item}
                   </li>
                 ))}
@@ -135,35 +137,26 @@ const TourDetail = () => {
             </div>
 
             {/* What's included */}
-            <div
-              className="tab-pane fade"
-              id="included"
-              role="tabpanel"
-            >
+            <div className="tab-pane fade" id="included">
               <ul className="list-group list-group-flush bg-white bg-opacity-10 border border-light rounded-3 shadow">
                 {tour.whatsIncluded.map((item, i) => (
-                  <li key={i} className="list-group-item bg-transparent text-black border-bottom border-light border-opacity-25">
+                  <li
+                    key={i}
+                    className="list-group-item bg-transparent text-black border-bottom border-light border-opacity-25"
+                  >
                     {item}
                   </li>
                 ))}
               </ul>
             </div>
 
-            {/* reservation */}
-            <div
-              className="tab-pane fade"
-              id="reservation"
-              role="tabpanel"
-            >
-              <ul className="list-group list-group-flush bg-white bg-opacity-10 border border-light rounded-3 shadow">
-                <Reservations price={tour.price} title={tour.title} />
-              </ul>
+            {/* Reservation */}
+            <div className="tab-pane fade" id="reservation">
+              <Reservations price={tour.price} title={tour.title} tourId={tour.id}
+              />
             </div>
-
           </div>
-
         </div>
-
       </div>
     </div>
   );
